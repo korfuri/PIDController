@@ -24,10 +24,8 @@ class PID:
         if current_time is None:
             current_time = time.time()
         dt = current_time - self.previous_time
-        print 'dt:', dt
         if dt <= 0.0:
             return 0
-        print 'de:', dt
         de = error - self.previous_error
 
         self.Cp = error
