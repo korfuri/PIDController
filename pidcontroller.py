@@ -3,7 +3,10 @@ import time
 class PID:
     """PID controller."""
 
-    def __init__(self, Kp, Ki, Kd, origin_time=time.time()):
+    def __init__(self, Kp, Ki, Kd, origin_time=None):
+        if origin_time is None:
+            origin_time = time.time()
+
         # Gains for each term
         self.Kp = Kp
         self.Ki = Ki
@@ -17,21 +20,25 @@ class PID:
         self.previous_time = origin_time
         self.previous_error = 0.0
 
-    def Update(self, error, time=time.time()):
-        dt = time - self.previous_time
+    def Update(self, error, current_time=None):
+        if current_time is None:
+            current_time = time.time()
+        dt = current_time - self.previous_time
+        print 'dt:', dt
         if dt <= 0.0:
             return 0
+        print 'de:', dt
         de = error - self.previous_error
 
-        self.Cp = self.Kp * error
+        self.Cp = error
         self.Ci += error * dt
         self.Cd = de / dt
 
-        self.previous_time = time
+        self.previous_time = current_time
         self.previous_error = error
 
         return (
-            self.Cp                # proportional term
+            (self.Kp * self.Cp)    # proportional term
             + (self.Ki * self.Ci)  # integral term
             + (self.Kd * self.Cd)  # derivative term
         )
